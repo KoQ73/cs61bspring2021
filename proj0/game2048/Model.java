@@ -114,11 +114,86 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        board.setViewingPerspective(side);
+
+        // to offset the coordinates for persepective
+        int offsetColumn = 0;
+        int offsetRow = 0;
+        if (side == Side.WEST) {
+
+        }
+
+        for (int col = 0; col < size(); col++) {
+            // tilting column by column as they are independent of each other
+            if (tiltColumn(col)) {
+                changed = true;
+            }
+        }
+
+        board.setViewingPerspective(Side.NORTH);
+
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    /** Given specific column do the tilt method */
+    public boolean tiltColumn(int col) {
+        boolean changed = false;
+        int alreadyChanged = 0;
+        // starts from the second row or size() - 2
+        for (int row = size() - 2; row >= 0; row -= 1) {
+            // find which row each tile should end up on
+            Tile t = board.tile(col, row);
+            if (t == null) {
+                continue;
+            }
+            int toMove = countRows(t, col, row, alreadyChanged);
+            // update the score and also set the flag changed to true
+            if (toMove > 0) {
+                Tile s;
+                if (board.move(col, row + toMove, t)) {
+                    s = board.tile(col, row + toMove);
+                    score += s.value();
+                    alreadyChanged += 1;
+                }
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+
+    /** Returns how many times the tile have to move to get to the desired row */
+    public int countRows(Tile t, int col, int row, int offset) {
+        if (t == null) {
+            return 0;
+        }
+        int counter = 0;
+        int current = row + 1;
+        Tile c;
+        while (current < size() - offset) {
+            c = board.tile(col, current);
+            // Allowed to move up if the one above is empty or has the same value as the tile above
+            if (t == null) {
+                counter += 1;
+                current += 1;
+                continue;
+            }
+            if (c == null) {
+                counter += 1;
+                current += 1;
+                continue;
+            }
+            if (t.value() == c.value()) {
+                counter += 1;
+                t = c;
+            }
+            current += 1;
+        }
+        return counter;
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -138,6 +213,14 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile t = b.tile(col, row);
+                if (t == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +231,14 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile t = b.tile(col, row);
+                if (t != null && t.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,6 +250,47 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile t1 = b.tile(row, col);
+                // Check if there is an empty tile
+                if (t1 == null) {
+                    return true;
+                }
+                // Check left and right adjacent tiles
+                if (checkSameValueInTile(t1, row, col + 1, b)) {
+                    return true;
+                }
+                // Check top and bottom adjacent tiles
+                if (checkSameValueInTile(t1, row + 1, col, b)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Returns if a tile can exist in the board give the row and column */
+    public static boolean checkValidTile(int row, int col, int size) {
+        if (row < 0 || row >= size || col < 0 || col >= size) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Check if the tile has the same value as the tile on the given row and column value */
+    public static boolean checkSameValueInTile(Tile t, int row, int col, Board b) {
+        // Check given row and column are valid
+        boolean valid = checkValidTile(row, col, b.size());
+        if (valid) {
+            Tile t2 = b.tile(row, col);
+            if (t2 == null) {
+                return false;
+            }
+            if (t.value() == t2.value()) {
+                return true;
+            }
+        }
         return false;
     }
 
