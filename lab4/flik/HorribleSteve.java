@@ -1,5 +1,9 @@
 package flik;
 
+import org.junit.jupiter.api.Test;
+
+import static com.google.common.truth.Truth.assertThat;
+
 public class HorribleSteve {
     public static void main(String [] args) throws Exception {
         int i = 0;
