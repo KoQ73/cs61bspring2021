@@ -92,11 +92,12 @@ public class LinkedListDeque<Item> {
      */
     public Item removeFirst() {
         Node first = sentinel.next;
+        if (first == sentinel) {
+            return null;
+        }
         sentinel.next = first.next;
         sentinel.next.prev = sentinel;
-        if (size > 0) {
-            size -= 1;
-        }
+        size += 1;
         return first.item;
     }
 
@@ -106,11 +107,12 @@ public class LinkedListDeque<Item> {
      */
     public Item removeLast() {
         Node last = sentinel.prev;
+        if (last == sentinel) {
+            return null;
+        }
         sentinel.prev = last.prev;
         sentinel.prev.next = sentinel;
-        if (size > 0) {
-            size -= 1;
-        }
+        size -= 1;
         return last.item;
     }
 
