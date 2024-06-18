@@ -1,5 +1,7 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdOut;
+
 public class ArrayDeque<Item> {
     private Item[] items;
     private int size;
@@ -26,13 +28,16 @@ public class ArrayDeque<Item> {
         if (size == items.length) {
             resize(items.length * RFACTOR);
         }
+        // Moves to the left of the array
+        // Check if it at the left end of the array and move it to the right end
+        if (nextFirst < 0) {
+            nextFirst = ARRAY_SIZE - 1;
+        }
         items[nextFirst] = item;
         nextFirst -= 1;
-        if (nextFirst < 0) {
-            nextFirst = items.length - 1;
-        }
         size += 1;
     }
+
     /**
      * Add the item at the nextLast position and revert it back to the front of the array if nextLast already reached the end and resize the array if needed.
      * @param item Item to be added at the nextFront position.
@@ -41,11 +46,13 @@ public class ArrayDeque<Item> {
         if (size == items.length) {
             resize(items.length * RFACTOR);
         }
-        items[nextLast] = item;
-        nextLast += 1;
+        // Moves to the right of the array
+        // Check if it at the right end of the array and move it to the left end
         if (nextLast > items.length - 1) {
             nextLast = 0;
         }
+        items[nextLast] = item;
+        nextLast = nextLast + 1;
         size += 1;
     }
 
@@ -81,21 +88,15 @@ public class ArrayDeque<Item> {
      * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
      */
     public void printDeque() {
-        // Usual case
-        int i = nextFirst + 1;
-        // Corner case when the nextFirst is at the end
-        if (nextFirst == items.length - 1) {
-            i = 0;
-        }
-        int count = 0;
-        while (count != size) {
-            System.out.println(items[i] + " ");
-            i++;
-            // When iteration reached to the end of the list
-            if (i > items.length - 1) {
-                i = 0;
+        int walker = nextFirst + 1;
+        // Always goes from left to right in any cases in the array
+        for(int i = 1; i < size; i++) {
+            // if it at the right end of the array move it back to the front
+            if (walker > items.length - 1) {
+                walker = 0;
             }
-            count ++;
+            System.out.print(items[walker] + " ");
+            walker += 1;
         }
         System.out.println();
     }
@@ -105,14 +106,17 @@ public class ArrayDeque<Item> {
      * @return The item that has been removed from the front.
      */
     public Item removeFirst() {
-        int usage_ratio = size / items.length;
-        if (usage_ratio < 0.25) {
-            resize(items.length / RFACTOR);
+        // if the array is empty just return null
+        if (isEmpty()) {
+            return null;
         }
+        // Move the nextFirst to nextFirst + 1;
         nextFirst = nextFirst + 1;
-        if (nextFirst == items.length) {
+        // If nextFirst is at the end of the array, move it to zero.
+        if (nextFirst > items.length - 1) {
             nextFirst = 0;
         }
+        // Remove the item
         Item r = items[nextFirst];
         items[nextFirst] = null;
         size -= 1;
@@ -124,12 +128,12 @@ public class ArrayDeque<Item> {
      * @return The item that has been removed from the end.
      */
     public Item removeLast() {
-        int usage_ratio = size / items.length;
-        if (usage_ratio < 0.25) {
-            resize(items.length / RFACTOR);
+        // if the array is empty just return null
+        if (isEmpty()) {
+            return null;
         }
         nextLast = nextLast - 1;
-        if (nextLast == 0) {
+        if (nextLast < 0) {
             nextLast = items.length - 1;
         }
         Item r = items[nextLast];
@@ -144,13 +148,10 @@ public class ArrayDeque<Item> {
      * @return      The item at index in array items.
      */
     public Item get(int index) {
-        if (index > size - 1 || index < 0) {
+        if (index > size - 1 || index < 0 || isEmpty()) {
             return null;
         }
         int start = nextFirst + 1;
-        if (start == items.length) {
-            start = 0;
-        }
         int i = start + index;
         i = i % items.length;
         Item r = items[i];

@@ -35,6 +35,126 @@ public class LinkedListDequeTest {
     }
 
     @Test
+    public void addFirstTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        assertTrue("A newly initialized LLDeque should be empty", l.isEmpty());
+        assertEquals(0, l.size());
+
+        // Adding a new item with addFirst
+        l.addFirst(1);
+        assertEquals(1, l.size());
+
+        // Adding a new item with addFirst
+        l.addFirst(2);
+        assertEquals(2, l.size());
+    }
+
+    @Test
+    public void addLastTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        assertTrue("A newly initialized LLDeque should be empty", l.isEmpty());
+        assertEquals(0, l.size());
+
+        // Adding a new item with addFirst
+        l.addLast(1);
+        assertEquals(1, l.size());
+
+        // Adding a new item with addFirst
+        l.addLast(2);
+        assertEquals(2, l.size());
+
+        l.addLast(3);
+        assertEquals(3, l.size());
+    }
+
+    @Test
+    public void isEmptyTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        assertTrue("A newly initialized LLDeque should be empty", l.isEmpty());
+        assertEquals(0, l.size());
+        assertEquals(true, l.isEmpty());
+    }
+
+    @Test
+    public void printDequeTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        assertTrue("A newly initialized LLDeque should be empty", l.isEmpty());
+        l.printDeque();
+
+        l.addFirst(1);
+        l.printDeque();
+
+        l.addLast(2);
+        l.printDeque();
+
+        l.addFirst(0);
+        l.printDeque();
+
+        l.addLast(3);
+        l.printDeque();
+    }
+
+    @Test
+    public void removeFirstTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        // should be empty
+        assertTrue("lld1 should be empty upon initialization", l.isEmpty());
+        assertEquals(0, l.size());
+
+        // Try to remove first item in an empty list
+        l.removeFirst();
+
+        // Add some items
+        l.addFirst(1);
+        l.removeFirst();
+        l.printDeque();
+        assertEquals(0, l.size());
+
+        l.addFirst(1);
+        l.addLast(2);
+        l.removeFirst();
+        l.printDeque();
+        assertEquals(1, l.size());
+
+        l.addLast(3);
+        l.addFirst(1);
+        l.addLast(4);
+        l.removeFirst();
+        l.printDeque();
+        assertEquals(3, l.size());
+    }
+
+    @Test
+    public void removeLastTest() {
+        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
+        // should be empty
+        assertTrue("lld1 should be empty upon initialization", l.isEmpty());
+        assertEquals(0, l.size());
+
+        // Try to remove first item in an empty list
+        l.removeLast();
+
+        // Add some items
+        l.addFirst(1);
+        l.removeLast();
+        l.printDeque();
+        assertEquals(0, l.size());
+
+        l.addFirst(1);
+        l.addLast(2);
+        l.removeLast();
+        l.printDeque();
+        assertEquals(1, l.size());
+
+        l.addLast(2);
+        l.addFirst(0);
+        l.addLast(3);
+        l.removeLast();
+        l.printDeque();
+        assertEquals(3, l.size());
+    }
+
+    @Test
     /** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
     public void addRemoveTest() {
 
@@ -52,10 +172,33 @@ public class LinkedListDequeTest {
     }
 
     @Test
+    public void getTest() {
+        LinkedListDeque<String> l = new LinkedListDeque<String>();
+        l.addLast("a");
+        l.addLast("b");
+        l.addLast("c");
+        l.addLast("d");
+
+        System.out.println(l.getRecursive(0));
+        System.out.println(l.getRecursive(1));
+        System.out.println(l.getRecursive(2));
+        System.out.println(l.getRecursive(3));
+        System.out.println(l.getRecursive(4));
+        System.out.println(l.getRecursive(-1));
+
+        System.out.println(l.get(0));
+        System.out.println(l.get(1));
+        System.out.println(l.get(2));
+        System.out.println(l.get(3));
+        System.out.println(l.get(4));
+        System.out.println(l.get(-1));
+    }
+
+    @Test
     /* Tests removing from an empty deque */
     public void removeEmptyTest() {
 
-        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
         lld1.addFirst(3);
 
         lld1.removeLast();

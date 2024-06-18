@@ -41,9 +41,13 @@ public class LinkedListDeque<Item> {
      * @param i item to be added
      */
     public void addFirst(Item i) {
+        // Remember the old s.next
         Node oldFirst = sentinel.next;
+        // Add current item
         sentinel.next = new Node(i, oldFirst, sentinel);
+        // Update the old s.next
         oldFirst.prev = sentinel.next;
+        // Update size
         size += 1;
     }
 
@@ -52,9 +56,13 @@ public class LinkedListDeque<Item> {
      * @param i item to be added
      */
     public void addLast(Item i) {
+        // Remember old last
         Node oldLast = sentinel.prev;
+        // Add current item
         sentinel.prev = new Node(i, sentinel, oldLast);
+        // Update old last
         oldLast.next = sentinel.prev;
+        // Update size
         size += 1;
     }
 
@@ -63,7 +71,7 @@ public class LinkedListDeque<Item> {
      * @return  True if the deque is empty or false otherwise.
      */
     public boolean isEmpty() {
-       return sentinel.next == sentinel;
+       return sentinel.next == sentinel && sentinel.prev == sentinel;
     }
 
     /**
@@ -78,11 +86,14 @@ public class LinkedListDeque<Item> {
      *  Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
      */
     public void printDeque() {
+        // a walker node to walk through the linked list
         Node walker = sentinel.next;
-        while (walker != sentinel) {
+        // Goes from s.next to s.prev
+        while (walker.prev != sentinel.prev) {
             System.out.print(walker.item + " ");
             walker = walker.next;
         }
+        // Add a new line
         System.out.println();
     }
 
@@ -91,13 +102,17 @@ public class LinkedListDeque<Item> {
      * @return First item if it exists or null otherwise.
      */
     public Item removeFirst() {
+        // Remember the old first
         Node first = sentinel.next;
+        // If there is no first item
         if (first == sentinel) {
             return null;
         }
+        // Update the linked list
         sentinel.next = first.next;
         sentinel.next.prev = sentinel;
-        size += 1;
+        // Update size
+        size -= 1;
         return first.item;
     }
 
@@ -122,19 +137,35 @@ public class LinkedListDeque<Item> {
      * @return The item at the index.
      */
     public Item get(int index) {
+        // index must not be negative
         if (index < 0) {
             return null;
         }
-        Node walker = sentinel.next;
-        int count = 0;
-        while (walker != sentinel) {
-            if (index == count) {
-                return walker.item;
-            }
-            walker = walker.next;
-            count++;
+        // if index is out of range just return null
+        if (index > size - 1) {
+            return null;
         }
-        return null;
+        // if the list is empty just return null
+        if (isEmpty()) {
+            return null;
+        }
+        // first and last item optimization
+        if (index == 0) {
+            return sentinel.next.item;
+        }
+        if (index == size - 1) {
+            return sentinel.prev.item;
+        }
+        // for other items
+        Node walker = sentinel;
+        int count = index + 1;
+        Item item = null;
+        // Iterate till the item
+        for (int i = 0; i < count; i++) {
+            walker = walker.next;
+        }
+        item = walker.item;
+        return item;
     }
     public Item getRecursive(int index) {
         if (index < 0) {
@@ -159,29 +190,6 @@ public class LinkedListDeque<Item> {
         else {
             return helperGetRecursive(walker.next, index - 1);
         }
-    }
-
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> l = new LinkedListDeque<Integer>();
-        l.addFirst(10);
-        l.addLast(20);
-        l.addFirst(1);
-        l.addLast(30);
-        l.addLast(40);
-        System.out.println(l.size());
-        l.printDeque();
-        l.removeFirst();
-        l.printDeque();
-        l.removeLast();
-        l.printDeque();
-        System.out.println(l.get(0));
-        System.out.println(l.get(1));
-        System.out.println(l.get(2));
-        System.out.println(l.get(3));
-        System.out.println(l.getRecursive(0));
-        System.out.println(l.getRecursive(1));
-        System.out.println(l.getRecursive(2));
-        System.out.println(l.getRecursive(3));
     }
 
 }
