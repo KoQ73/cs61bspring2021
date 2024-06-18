@@ -161,4 +161,25 @@ public class ArrayDequeTest {
         System.out.print(a1.get(8));
         System.out.print(a1.get(-1));
     }
+
+    @Test
+    public void resizeTest() {
+        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>();
+
+        a1.addLast(1);
+        a1.addLast(2);
+        a1.addLast(3);
+        a1.addLast(4);
+        a1.addLast(5);
+        a1.addLast(6);
+        a1.addLast(7);
+        a1.addLast(8);
+        a1.addLast(9);
+        assertEquals(9, a1.size());
+        a1.printDeque();
+        a1.removeFirst();
+        a1.removeLast();
+        System.out.println(a1.get(0));
+        System.out.println(a1.get(6));
+    }
 }

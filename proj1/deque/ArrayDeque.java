@@ -58,14 +58,17 @@ public class ArrayDeque<Item> {
 
     public void resize(int capacity) {
         Item[] a = (Item[]) new Object[capacity];
+        // Copy from nextFirst + 1 to the end of the array
         int start = nextFirst + 1;
         int itemsToEnd = items.length - start;
-        int leftItems = items.length - itemsToEnd;
         System.arraycopy(items, start, a, 0, itemsToEnd);
+        // Copy from the start of the array to nextLast - 1
+        int leftItems = items.length - itemsToEnd;
         System.arraycopy(items, 0, a, itemsToEnd, leftItems);
-        nextLast = size;
+        // Update nextFirst and nextLast
         items = a;
         nextFirst = items.length - 1;
+        nextLast = size;
     }
 
     /**
@@ -90,7 +93,7 @@ public class ArrayDeque<Item> {
     public void printDeque() {
         int walker = nextFirst + 1;
         // Always goes from left to right in any cases in the array
-        for(int i = 1; i < size; i++) {
+        for(int i = 0; i < size; i++) {
             // if it at the right end of the array move it back to the front
             if (walker > items.length - 1) {
                 walker = 0;
@@ -109,6 +112,11 @@ public class ArrayDeque<Item> {
         // if the array is empty just return null
         if (isEmpty()) {
             return null;
+        }
+        // Check the usage factor and resize it down
+        float usage_factor = size / items.length;
+        if (usage_factor <= 0.25 && items.length >= 16) {
+            resize(items.length / 2);
         }
         // Move the nextFirst to nextFirst + 1;
         nextFirst = nextFirst + 1;
@@ -131,6 +139,11 @@ public class ArrayDeque<Item> {
         // if the array is empty just return null
         if (isEmpty()) {
             return null;
+        }
+        // Check the usage factor and resize it down
+        float usage_factor = size / items.length;
+        if (usage_factor <= 0.25 && items.length >= 16) {
+            resize(items.length / 2);
         }
         nextLast = nextLast - 1;
         if (nextLast < 0) {
