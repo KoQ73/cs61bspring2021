@@ -33,12 +33,8 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
             resize(items.length * RFACTOR);
         }
         // Moves to the left of the array
-        // Check if it at the left end of the array and move it to the right end
-        if (nextFirst < 0) {
-            nextFirst = ARRAY_SIZE - 1;
-        }
         items[nextFirst] = item;
-        nextFirst -= 1;
+        nextFirst = (nextFirst - 1 + items.length) % items.length;
         size += 1;
     }
 
@@ -52,27 +48,20 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
             resize(items.length * RFACTOR);
         }
         // Moves to the right of the array
-        // Check if it at the right end of the array and move it to the left end
-        if (nextLast > items.length - 1) {
-            nextLast = 0;
-        }
         items[nextLast] = item;
-        nextLast = nextLast + 1;
+        nextLast = (nextLast + 1) % items.length;
         size += 1;
     }
 
     public void resize(int capacity) {
-        Item[] a = (Item[]) new Object[capacity];
-        // Copy from nextFirst + 1 to the end of the array
-        int start = nextFirst + 1;
-        int itemsToEnd = items.length - start;
-        System.arraycopy(items, start, a, 0, itemsToEnd);
-        // Copy from the start of the array to nextLast - 1
-        int leftItems = items.length - itemsToEnd;
-        System.arraycopy(items, 0, a, itemsToEnd, leftItems);
-        // Update nextFirst and nextLast
-        items = a;
-        nextFirst = items.length - 1;
+        Item[] newItems = (Item[]) new Object[capacity];
+        int currentFirst = (nextFirst + 1) % items.length;
+        for (int i = 0; i < size; i++) {
+            newItems[i] = items[currentFirst];
+            currentFirst = (currentFirst + 1) % items.length;
+        }
+        items = newItems;
+        nextFirst = capacity - 1;
         nextLast = size;
     }
 
@@ -105,26 +94,17 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
      */
     @Override
     public Item removeFirst() {
-        // if the array is empty just return null
         if (isEmpty()) {
             return null;
         }
-        // Check the usage factor and resize it down
-        float usage_factor = size / items.length;
-        if (usage_factor <= 0.25 && items.length >= 16) {
-            resize(items.length / 2);
-        }
-        // Move the nextFirst to nextFirst + 1;
-        nextFirst = nextFirst + 1;
-        // If nextFirst is at the end of the array, move it to zero.
-        if (nextFirst > items.length - 1) {
-            nextFirst = 0;
-        }
-        // Remove the item
-        Item r = items[nextFirst];
+        nextFirst = (nextFirst + 1) % items.length;
+        Item item = items[nextFirst];
         items[nextFirst] = null;
         size -= 1;
-        return r;
+        if (size > 0 && size == items.length / 4 && items.length > ARRAY_SIZE) {
+            resize(items.length / 2);
+        }
+        return item;
     }
 
     /**
@@ -133,23 +113,17 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
      */
     @Override
     public Item removeLast() {
-        // if the array is empty just return null
         if (isEmpty()) {
             return null;
         }
-        // Check the usage factor and resize it down
-        float usage_factor = size / items.length;
-        if (usage_factor <= 0.25 && items.length >= 16) {
-            resize(items.length / 2);
-        }
-        nextLast = nextLast - 1;
-        if (nextLast < 0) {
-            nextLast = items.length - 1;
-        }
-        Item r = items[nextLast];
+        nextLast = (nextLast - 1 + items.length) % items.length;
+        Item item = items[nextLast];
         items[nextLast] = null;
         size -= 1;
-        return r;
+        if (size > 0 && size == items.length / 4 && items.length > ARRAY_SIZE) {
+            resize(items.length / 2);
+        }
+        return item;
     }
 
     /**
@@ -159,14 +133,11 @@ public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
      */
     @Override
     public Item get(int index) {
-        if (index > size - 1 || index < 0 || isEmpty()) {
+        if (index < 0 || index >= size) {
             return null;
         }
-        int start = nextFirst + 1;
-        int i = start + index;
-        i = i % items.length;
-        Item r = items[i];
-        return r;
+        int currentIndex = (nextFirst + 1 + index) % items.length;
+        return items[currentIndex];
     }
 
     public Iterator<Item> iterator() {
