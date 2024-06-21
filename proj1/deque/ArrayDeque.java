@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ArrayDeque<Item> implements Iterable<Item> {
+public class ArrayDeque<Item> implements Deque<Item>, Iterable<Item> {
     private Item[] items;
     private int size;
     private int nextFirst;
@@ -27,6 +27,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
      * Add the item at the nextFront position and revert it back to the end of the array if nextFirst already reached zero and resize the array if needed.
      * @param item Item to be added at the nextFront position.
      */
+    @Override
     public void addFirst(Item item) {
         if (size == items.length) {
             resize(items.length * RFACTOR);
@@ -45,6 +46,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
      * Add the item at the nextLast position and revert it back to the front of the array if nextLast already reached the end and resize the array if needed.
      * @param item Item to be added at the nextFront position.
      */
+    @Override
     public void addLast(Item item) {
         if (size == items.length) {
             resize(items.length * RFACTOR);
@@ -75,17 +77,10 @@ public class ArrayDeque<Item> implements Iterable<Item> {
     }
 
     /**
-     * Returns whether the array is empty or not.
-     * @return If no item in the array, the size will be zero.
-     */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    /**
      * Returns the number of items in the array and not the size of the actual array.
      * @return Size.
      */
+    @Override
     public int size() {
         return size;
     }
@@ -93,6 +88,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
     /**
      * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
      */
+    @Override
     public void printDeque() {
         if (isEmpty()) {
             return;
@@ -107,6 +103,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
      * Removes and returns the item at the front of the deque. If no such item exists, returns null.
      * @return The item that has been removed from the front.
      */
+    @Override
     public Item removeFirst() {
         // if the array is empty just return null
         if (isEmpty()) {
@@ -134,6 +131,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
      * Removes and returns the item at the back of the deque. If no such item exists, returns null.
      * @return The item that has been removed from the end.
      */
+    @Override
     public Item removeLast() {
         // if the array is empty just return null
         if (isEmpty()) {
@@ -159,6 +157,7 @@ public class ArrayDeque<Item> implements Iterable<Item> {
      * @param index The index to get.
      * @return      The item at index in array items.
      */
+    @Override
     public Item get(int index) {
         if (index > size - 1 || index < 0 || isEmpty()) {
             return null;
