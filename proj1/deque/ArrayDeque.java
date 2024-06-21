@@ -2,7 +2,10 @@ package deque;
 
 import edu.princeton.cs.algs4.StdOut;
 
-public class ArrayDeque<Item> {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class ArrayDeque<Item> implements Iterable<Item> {
     private Item[] items;
     private int size;
     private int nextFirst;
@@ -91,15 +94,11 @@ public class ArrayDeque<Item> {
      * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed, print out a new line.
      */
     public void printDeque() {
-        int walker = nextFirst + 1;
-        // Always goes from left to right in any cases in the array
-        for(int i = 0; i < size; i++) {
-            // if it at the right end of the array move it back to the front
-            if (walker > items.length - 1) {
-                walker = 0;
-            }
-            System.out.print(items[walker] + " ");
-            walker += 1;
+        if (isEmpty()) {
+            return;
+        }
+        for (Item i : this) {
+            System.out.print(i + " ");
         }
         System.out.println();
     }
@@ -169,5 +168,54 @@ public class ArrayDeque<Item> {
         i = i % items.length;
         Item r = items[i];
         return r;
+    }
+
+    public Iterator<Item> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<Item> {
+        int index;
+        int count;
+        public ArrayDequeIterator() {
+            index = nextFirst + 1;
+            if (index > items.length - 1) {
+                index = 0;
+            }
+            int count = 0;
+        }
+
+        public boolean hasNext() {
+            if (index != nextLast || count != size) {
+                return true;
+            }
+            return false;
+        }
+
+        public Item next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            // extract the item to output
+            Item i = items[index];
+            // prepare for the next time we call next
+            moveIndex();
+            // Return item we got before
+            return i;
+        }
+
+        private void moveIndex() {
+            if (hasNext()) {
+                index += 1;
+                if (index > items.length - 1) {
+                    index = 0;
+                }
+            }
+            count += 1;
+        }
+
+        public void remove() {
+
+        }
     }
 }
