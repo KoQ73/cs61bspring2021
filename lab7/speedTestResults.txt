@@ -1,0 +1,2 @@
+In random time the order of growth belong to Theta(log N).
+In order time the order of growth belong to Theta(N);
